@@ -1,0 +1,11 @@
+.scored-rack {
+    display: flex;
+    justify-content: space-between;
+    background-color: black;
+    color: #abbd81;
+    padding: 1.5% 5% 1.5% 5%;
+}
+
+.scored-rack:first-child {
+    color: #f8b26a;
+  }

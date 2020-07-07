@@ -1,0 +1,20 @@
+.alert-alert-success {
+    color: black;
+    background-color: #abbd81;
+    padding-left: 3%;
+    font-size: 25.5px;
+}
+
+.alert-alert-failure {
+    color: black;
+    background-color: #e15b64;
+    padding-left: 3%;
+    font-size: 25.5px;
+}
+
+.alert-alert-delete-success {
+    color: black;
+    background-color: #f8b26a;
+    padding-left: 3%;
+    font-size: 25.5px;
+}

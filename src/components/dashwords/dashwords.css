@@ -1,0 +1,116 @@
+.wrapper {
+  min-height: 70vh;
+}
+
+#word {
+    font-size: 30px;
+    font-family: futura;
+}
+
+@keyframes addToRack {
+  0% {
+    color: #d4e3ab;
+  }
+  100% {
+    color: #f8b26a;
+  }
+}
+
+.word-tile {
+    background-color: black;
+    color: #abbd81;
+    width: fit-content;
+    padding-left: 5px;
+    padding-bottom: 5px;
+    border-radius: 5px;
+    margin: 5px;
+    animation-name: addToRack;
+    animation-duration: 1s;
+}
+
+.word-tile:hover {
+  background-color: black;
+  color: #d4e3ab;
+}
+
+.rack {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: #464649;
+    border-radius: 7px;
+    margin: 5px;
+    box-shadow: 3px 3px 5px 6px #ccc;
+}
+
+#word-input {
+    font-family: futura;
+    font-size: 20px;
+    width: 30% !important;
+    font-weight: thin;
+}
+
+.dashwords {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    align-items: center;
+    margin-left: 20%;
+}
+
+
+label {
+    font-size: 20px;
+    text-align: center;
+}
+
+#small-label {
+    font-size: 15px;
+}
+
+  button {
+      background-color: #323339;
+      cursor: pointer;
+      border: solid #323339 2px;
+      border-radius: 7px;
+  }
+  button:hover {
+    background-color: black;
+  }
+
+  .final-dashwords {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    align-items: center;
+    background-color: black;
+    margin-left: 25%;
+    border-radius: 9px;
+    box-shadow: 3px 3px 5px 6px grey;
+}
+
+  #game-over {
+    color: #e15b64;
+  }
+
+  @keyframes finalPoints {
+    0%   {color: #f8b26a;}
+    25%  {color: #e15b64;}
+    50%  {color: #abbd81;}
+    100% {color: #1ec7e6;}
+  }
+
+  #final-points {
+    color: #abbd81;
+    animation-name: finalPoints;
+    animation-duration: 2s;
+    animation-iteration-count: 10;
+  }
+
+  .history {
+    width: 40%;
+    padding: 5% 30% 10% 30%;
+    text-align: center;
+    color: black;
+  }
+
+

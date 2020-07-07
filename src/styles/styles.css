@@ -1,0 +1,27 @@
+#topmost {
+  font-family: futura;
+  text-align: center;
+  color: #f8b26a;
+  background-color: black;
+  height: 70px;
+  font-size: 37px;
+  margin-bottom: 40px;
+  clip-path: polygon(0 0, 100% 0, 100% 65%, 0% 100%);
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    overflow-x: hidden;
+    font-family: futura;
+    color: grey;
+    background-image: url('../assets/wooden-surface.jpg');
+    font-family: futura;
+  }
+
+html {
+    padding: 0;
+	  margin: 0;
+	  overflow-y: auto;
+    overflow-x: hidden;
+  }
