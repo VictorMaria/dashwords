@@ -14,11 +14,13 @@ import scored from '../../assets/scored.mp3';
 import fizzyFirework from '../../assets/fizzyFirework.mp3';
 import theEnd from '../../assets/theEnd.mp3';
 import './dashwords.css';
+import { connectToSocket } from '../../sockets';
 
 class Dashwords extends Component {
     constructor(props) {
         super(props);
         this.state = {
+          socket: {},
           game: {},  
           rack: [],
           word: '',
@@ -46,6 +48,10 @@ class Dashwords extends Component {
         this.removeWordFromRack = this.removeWordFromRack.bind(this);
       }
 
+      componentDidMount (){
+         const newSocket = connectToSocket();
+         this.setState({ socket: newSocket });
+      }
     onPlay() {
         this.sound.play();
     }  
@@ -151,6 +157,7 @@ submitRack () {
         return setAlert('Your rack should have at least two words', 'failure');
     }
     this.scoreRack();
+    this.state.socket.emit('rack', rack)
     this.setState(prevState => ({
             playedWords: [...playedWords, ...rack],
             rack: [],
