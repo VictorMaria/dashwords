@@ -5,7 +5,7 @@
         }
     25%  {
             background-color: #FAA;
-            opacity: 0.10;
+            opacity: 0.50;
         }
     50%  {
             background-color: #FAA;
@@ -13,7 +13,7 @@
         }
     100% {
             background-color: #FAA;
-            opacity: 0.5;
+            opacity: 0.50;
         }
   }
 
@@ -22,6 +22,6 @@
     color: black;
     padding: 2px;
     border-radius: 3px;
-    animation: glow 5s linear 2s infinite alternate;
+    animation: glow 4s linear infinite;
 }
 

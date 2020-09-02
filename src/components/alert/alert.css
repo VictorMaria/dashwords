@@ -18,3 +18,10 @@
     padding-left: 3%;
     font-size: 25.5px;
 }
+
+.alert-alert-pending {
+    color: black;
+    background-color: palegoldenrod;
+    padding-left: 3%;
+    font-size: 25.5px;
+}

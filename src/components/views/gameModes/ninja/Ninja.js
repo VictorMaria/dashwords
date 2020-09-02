@@ -84,9 +84,9 @@ class Ninja extends Component {
         newSocket.on('randomAnagramResponse', (result) => {
         this.setState({ rack: [result[0].word] })
          });
-    this.handleConnectionChange();
-    window.addEventListener('online', this.handleConnectionChange);
-    window.addEventListener('offline', this.handleConnectionChange);
+        this.handleConnectionChange();
+        window.addEventListener('online', this.handleConnectionChange);
+        window.addEventListener('offline', this.handleConnectionChange);
       }
     componentWillUnmount() {
         window.removeEventListener('online', this.handleConnectionChange);
@@ -103,12 +103,12 @@ class Ninja extends Component {
         this.setState({ word: e.target.value });
       }
     addWordToRack (event) {
-        const { rack, playedWords } = this.state;
+        const { rack } = this.state;
         const { setAlert } = this.props;
         if (event.key === 'Enter' && event.target.value.match(/^[a-zA-Z]+$/)) {
             const refinedWord = event.target.value.toLowerCase();
             if(rack.length === 0) {
-
+              return setAlert('Please wait for your next word', 'pending');
             } 
             else if (rack.length > 0) {
               const refinedWordInRack = rack[0].split('').sort().join('');
@@ -185,6 +185,7 @@ async submitRack () {
     this.state.socket.on('randomAnagramResponse', (result) => { 
        this.setState({ rack: [result[0].word] });
     });
+    this.randomOnRack.play();
 }  
 resetTimer() {
     const { timerId } = this.state;
@@ -266,9 +267,12 @@ render() {
             { connectionStatus ? <BeamingDot/> : <RedBeamingDot/> }
             <Timer time={timeLeft} isActive={isActive}/>
             <h1 id={ totalScore > 0 ? "total-score" : ''} key={totalScore}>Total Score: {totalScore}</h1>
-                { rack.length !== 0 ? <label>Word Rack</label> : <FetchingLabel text='fetching next...'/> }
+                { rack.length !== 0 ? <label>Word Rack</label> : (
+                  <FetchingLabel text='fetching your next word...'/>
+                ) }
                 <div className="rack">
                     {rack.map((word, index) => (
+                      // Marks the random word differently
                         index === 0 ? (
                             <div className="ninja-word-tile" key={index}>
                             <span id="word">{word.toUpperCase()}</span>
@@ -278,6 +282,7 @@ render() {
                             </span>) : ''}
                         </div>
                             ) : (
+                        // Marks the non ramdom words differently      
                             <div className="word-tile" key={index}>
                             <span id="word">{word.toUpperCase()}</span>
                             &nbsp;&nbsp;

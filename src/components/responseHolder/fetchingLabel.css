@@ -5,7 +5,7 @@
         }
     25%  {
             background-color: palegoldenrod;
-            opacity: 0.20;
+            opacity: 0.50;
         }
     50%  {
             background-color: palegoldenrod;
@@ -13,7 +13,7 @@
         }
     100% {
             background-color: palegoldenrod;
-            opacity: 0.5;
+            opacity: 0.50;
         }
   }
 
@@ -22,6 +22,6 @@
     color: black;
     padding: 2px;
     border-radius: 3px;
-    animation: shimmer 5s linear 2s infinite alternate;
+    animation: shimmer 4s linear infinite;
 }
 

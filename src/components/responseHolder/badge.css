@@ -1,9 +1,10 @@
 #info {
-    background-color: #2196F3;
+    background-color: #256188;
     color: black;
-    opacity: 0.30;
     border-radius: 5px;
-    padding: 5px;
+    padding: 1px;
+    display: flex;
+    align-items: center;
 }
 
 #icon {
