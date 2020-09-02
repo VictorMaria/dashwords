@@ -1,0 +1,27 @@
+@keyframes glow {
+    0%   {
+            background-color: #FAA;
+            opacity: 0.20;
+        }
+    25%  {
+            background-color: #FAA;
+            opacity: 0.50;
+        }
+    50%  {
+            background-color: #FAA;
+            opacity: 0.20;
+        }
+    100% {
+            background-color: #FAA;
+            opacity: 0.50;
+        }
+  }
+
+.error-label {
+    background-color: #FAA;
+    color: black;
+    padding: 2px;
+    border-radius: 3px;
+    animation: glow 4s linear infinite;
+}
+

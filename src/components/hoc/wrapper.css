@@ -1,0 +1,10 @@
+#topmost {
+    font-family: futura;
+    text-align: center;
+    color: #f8b26a;
+    background-color: black;
+    height: 70px;
+    font-size: 37px;
+    margin-bottom: 40px;
+    clip-path: polygon(0 0, 100% 0, 100% 65%, 0% 100%);
+  }

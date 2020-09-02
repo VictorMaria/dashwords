@@ -1,0 +1,27 @@
+@keyframes shimmer {
+    0%   {
+            background-color: palegoldenrod;
+            opacity: 0.30;
+        }
+    25%  {
+            background-color: palegoldenrod;
+            opacity: 0.50;
+        }
+    50%  {
+            background-color: palegoldenrod;
+            opacity: 0.30;
+        }
+    100% {
+            background-color: palegoldenrod;
+            opacity: 0.50;
+        }
+  }
+
+.fetching-label {
+    background-color: palegoldenrod;
+    color: black;
+    padding: 2px;
+    border-radius: 3px;
+    animation: shimmer 4s linear infinite;
+}
+
