@@ -15,6 +15,12 @@ import fizzyFirework from '../../../../assets/fizzyFirework.mp3';
 import theEnd from '../../../../assets/theEnd.mp3';
 import '../styles.css';
 import { connectToSocket } from '../../../../sockets';
+import { checkOnlineStatus } from '../../../../utils/checkOnlineStatus';
+import { BeamingDot, RedBeamingDot } from '../../../../components/beamingDot/BeamingDot';
+import { Badge } from '../../../../components/responseHolder/Badge';
+import keyCodes from '../../../../utils/keyCodes';
+
+const { ESC, SHIFT, RIGHT } = keyCodes;
 
 class ClassicSprint extends Component {
     constructor(props) {
@@ -35,7 +41,9 @@ class ClassicSprint extends Component {
           timeSet: (1 * 330),
           timeLeft: (1 * 330),
           timerId: null,
+          connectionStatus: true,
         };
+        this.inputRef = React.createRef();
         this.sound = new Audio(dashwordsTickTock);
         this.sound.loop = true;
         this.onTheRack = new Audio(onTheRack);
@@ -46,19 +54,49 @@ class ClassicSprint extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.addWordToRack = this.addWordToRack.bind(this);
         this.removeWordFromRack = this.removeWordFromRack.bind(this);
+        this.handleConnectionChange = this.handleConnectionChange.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
       }
-
+  handleConnectionChange () {
+      const condition = navigator.onLine ? 'online' : 'offline';
+      if (condition === 'online') {
+        const beamWebBeacon = setInterval(
+          () => {
+            try {
+              const response = checkOnlineStatus();
+              if (response) {
+                this.setState({ connectionStatus: true });
+                return clearInterval(beamWebBeacon);
+              }
+              return this.setState({ connectionStatus: false });
+            } catch (error) {
+               return this.setState({ connectionStatus: false });
+           }
+        }, 2000);
+      }
+        return this.setState({ connectionStatus: false });
+      }
       componentDidMount (){
          const newSocket = connectToSocket();
          this.setState({ socket: newSocket });
+         this.handleConnectionChange();
+         window.addEventListener('online', this.handleConnectionChange);
+         window.addEventListener('offline', this.handleConnectionChange);
+         window.addEventListener('keydown', this.handleKeyDown);
       }
-    onPlay() {
+      componentWillUnmount() {
+        this.state.socket.disconnect();
+        window.removeEventListener('online', this.handleConnectionChange);
+        window.removeEventListener('offline', this.handleConnectionChange);
+        window.removeEventListener('keydown', this.handleKeyDown);
+        }
+      onPlay() {
         this.sound.play();
-    }  
-    onPause() {
+      }  
+      onPause() {
         this.sound.pause();
-    }
-    handleChange(e) {
+      }
+      handleChange(e) {
         this.setState({ word: e.target.value });
       }
     addWordToRack (event) {
@@ -128,6 +166,7 @@ removeWordFromRack(index) {
     const { rack } = this.state;
     this.setState({ rack: [...rack.filter(word => rack.indexOf(word) !== index)]});
     this.offTheRack.play();
+    this.inputRef.current.focus();
   };
 scoreRack () {
     const { rack, scoreBoard } = this.state;
@@ -164,8 +203,9 @@ submitRack () {
     }));
     this.setState(prevState => ({
         score: prevState.score - prevState.score,
-        }))    
-}  
+        }));
+    this.inputRef.current.focus();       
+}
 resetTimer() {
     const { timerId } = this.state;
     this.setState({
@@ -219,13 +259,31 @@ pauseTimer() {
     this.setState({ isActive: false, isPaused: true });
     clearInterval(timerId);
   };
+
+handleKeyDown (e) {
+  const { isActive, timeLeft } = this.state;
+  switch(e.keyCode) {
+    case SHIFT:
+      this.submitRack();
+      break;
+    case ESC:
+      isActive && timeLeft > 0 ? this.pauseTimer() : this.startTimer();
+      timeLeft > 0 ? this.inputRef.current.focus() : '';
+      break;  
+    default:
+      break;  
+    }
+  };
   
 render() {
-    const { rack, word, timeLeft, isActive, totalScore, scoreBoard, isGameOver } = this.state;
+    const { rack, word, timeLeft, isActive, totalScore, scoreBoard, isGameOver, connectionStatus } = this.state;
     return (
     <div className="wrapper">
         { !isGameOver ? (
             <div className="dashwords">
+             { connectionStatus ? <Badge/> : '' }
+             &nbsp;&nbsp;&nbsp;&nbsp; 
+             { connectionStatus ? <BeamingDot/> : <RedBeamingDot/> }
             <Timer time={timeLeft} isActive={isActive}/>
             <h1 id={ totalScore > 0 ? "total-score" : ''} key={totalScore}>Total Score: {totalScore}</h1>
                 { rack.length !== 0 ? <label>Word Rack</label> : <label>
@@ -253,6 +311,7 @@ render() {
                     placeholder="Spell something magical"
                     autoComplete="off"
                     disabled={!isActive}
+                    ref={this.inputRef}
                 />
                 &nbsp;&nbsp;
               { 

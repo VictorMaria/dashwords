@@ -22,6 +22,9 @@ import { BeamingDot, RedBeamingDot } from '../../../../components/beamingDot/Bea
 import { ErrorLabel } from '../../../../components/responseHolder/ErrorLabel';
 import { FetchingLabel } from '../../../../components/responseHolder/FetchingLabel';
 import { Badge } from '../../../../components/responseHolder/Badge';
+import keyCodes from '../../../../utils/keyCodes';
+
+const { ESC, SHIFT, RIGHT } = keyCodes;
 
 class Ninja extends Component {
     constructor(props) {
@@ -44,6 +47,7 @@ class Ninja extends Component {
           timerId: null,
           connectionStatus: true,
         };
+        this.inputRef = React.createRef();
         this.sound = new Audio(dashwordsTickTock);
         this.sound.loop = true;
         this.onTheRack = new Audio(onTheRack);
@@ -57,6 +61,7 @@ class Ninja extends Component {
         this.addWordToRack = this.addWordToRack.bind(this);
         this.removeWordFromRack = this.removeWordFromRack.bind(this);
         this.handleConnectionChange = this.handleConnectionChange.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
       }
       handleConnectionChange () {
         const condition = navigator.onLine ? 'online' : 'offline';
@@ -87,10 +92,13 @@ class Ninja extends Component {
         this.handleConnectionChange();
         window.addEventListener('online', this.handleConnectionChange);
         window.addEventListener('offline', this.handleConnectionChange);
+        window.addEventListener('keydown', this.handleKeyDown);
       }
     componentWillUnmount() {
-        window.removeEventListener('online', this.handleConnectionChange);
-        window.removeEventListener('offline', this.handleConnectionChange);
+      this.state.socket.disconnect();
+      window.removeEventListener('online', this.handleConnectionChange);
+      window.removeEventListener('offline', this.handleConnectionChange);
+      window.removeEventListener('keydown', this.handleKeyDown);
       }
 
     onPlay() {
@@ -144,6 +152,7 @@ removeWordFromRack (index) {
     const { rack } = this.state;
     this.setState({ rack: [...rack.filter(word => rack.indexOf(word) !== index)]});
     this.offTheRack.play();
+    this.inputRef.current.focus();
   };
 scoreRack () {
     const { rack, scoreBoard } = this.state;
@@ -166,10 +175,9 @@ scoreRack () {
     }));
     this.scored.play();     
 }  
-async submitRack () {
+submitRack () {
     const { rack, playedWords } = this.state;
     const { setAlert } = this.props;
-    let isConnected
     if(rack.length < 2) {
         return setAlert('Your rack should have at least two words', 'failure');
     }
@@ -185,6 +193,7 @@ async submitRack () {
     this.state.socket.on('randomAnagramResponse', (result) => { 
        this.setState({ rack: [result[0].word] });
     });
+    this.inputRef.current.focus();
     this.randomOnRack.play();
 }  
 resetTimer() {
@@ -254,7 +263,25 @@ skip() {
        this.setState({ rack: [result[0].word] })
     });
     this.randomOnRack.play();
-}  
+    this.inputRef.current.focus();
+}
+handleKeyDown (e) {
+  const { isActive, timeLeft } = this.state;
+  switch(e.keyCode) {
+    case SHIFT:
+      this.submitRack();
+      break;
+    case ESC:
+      isActive && timeLeft > 0 ? this.pauseTimer() : this.startTimer();
+      timeLeft > 0 ? this.inputRef.current.focus() : '';
+      break; 
+    case RIGHT:
+      isActive && timeLeft > 0 ? this.skip() : ''; 
+      break;  
+    default:
+      break;  
+    }
+  }; 
   
 render() {
     const { rack, word, timeLeft, isActive, totalScore, scoreBoard, isGameOver, connectionStatus } = this.state;
@@ -306,6 +333,7 @@ render() {
                   placeholder="Spell something magical"
                   autoComplete="off"
                   disabled={!isActive}
+                  ref={this.inputRef}
               />
                 ) }
               </>
