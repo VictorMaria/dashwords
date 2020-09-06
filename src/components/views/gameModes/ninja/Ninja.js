@@ -1,5 +1,14 @@
 import React, { Component } from 'react';
-import { MdBackspace, MdReplay, MdPlayArrow, MdPause, MdDoneAll, MdSkipNext } from "react-icons/md";
+import { MdBackspace,
+         MdReplay,
+         MdPlayArrow,
+         MdPause,
+         MdDoneAll,
+         MdSkipNext,
+         MdHelp,
+         MdPlaylistAddCheck,
+         MdArrowUpward,
+         } from "react-icons/md";
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux'
 import dictionary from '../../../../utils/dictionary.json';
@@ -22,6 +31,11 @@ import { BeamingDot, RedBeamingDot } from '../../../../components/beamingDot/Bea
 import { ErrorLabel } from '../../../../components/responseHolder/ErrorLabel';
 import { FetchingLabel } from '../../../../components/responseHolder/FetchingLabel';
 import { Badge } from '../../../../components/responseHolder/Badge';
+import keyCodes from '../../../../utils/keyCodes';
+import { Modal } from '../../../modal/Modal';
+import { NinjaTut } from '../../../../helpers/NinjaTut';
+
+const { ESC, SHIFT, RIGHT } = keyCodes;
 
 class Ninja extends Component {
     constructor(props) {
@@ -43,7 +57,9 @@ class Ninja extends Component {
           timeLeft: (1 * 330),
           timerId: null,
           connectionStatus: true,
+          openModal: false,
         };
+        this.inputRef = React.createRef();
         this.sound = new Audio(dashwordsTickTock);
         this.sound.loop = true;
         this.onTheRack = new Audio(onTheRack);
@@ -57,6 +73,9 @@ class Ninja extends Component {
         this.addWordToRack = this.addWordToRack.bind(this);
         this.removeWordFromRack = this.removeWordFromRack.bind(this);
         this.handleConnectionChange = this.handleConnectionChange.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
+        this.toggleModal = this.toggleModal.bind(this);
+        this.flightUp = this.flightUp.bind(this);
       }
       handleConnectionChange () {
         const condition = navigator.onLine ? 'online' : 'offline';
@@ -87,10 +106,13 @@ class Ninja extends Component {
         this.handleConnectionChange();
         window.addEventListener('online', this.handleConnectionChange);
         window.addEventListener('offline', this.handleConnectionChange);
+        window.addEventListener('keydown', this.handleKeyDown);
       }
     componentWillUnmount() {
-        window.removeEventListener('online', this.handleConnectionChange);
-        window.removeEventListener('offline', this.handleConnectionChange);
+      this.state.socket.disconnect();
+      window.removeEventListener('online', this.handleConnectionChange);
+      window.removeEventListener('offline', this.handleConnectionChange);
+      window.removeEventListener('keydown', this.handleKeyDown);
       }
 
     onPlay() {
@@ -122,12 +144,12 @@ class Ninja extends Component {
               // Convert rack array into set for optimized search operations
               const trimmedRack = new Set(rack);
               // Checks if the next word played is in the rack
-              if(trimmedRack.has(refinedWord)) {
+              if (trimmedRack.has(refinedWord)) {
                return setAlert('This word has been played', 'failure');
               }
                
               // Check if the word is not in the dictionary
-              if(!dictionary[refinedWord]) {
+              if (!dictionary[refinedWord]) {
                   return setAlert('This word is not real', 'failure');
               }
 
@@ -144,6 +166,7 @@ removeWordFromRack (index) {
     const { rack } = this.state;
     this.setState({ rack: [...rack.filter(word => rack.indexOf(word) !== index)]});
     this.offTheRack.play();
+    this.inputRef.current.focus();
   };
 scoreRack () {
     const { rack, scoreBoard } = this.state;
@@ -166,10 +189,9 @@ scoreRack () {
     }));
     this.scored.play();     
 }  
-async submitRack () {
+submitRack () {
     const { rack, playedWords } = this.state;
     const { setAlert } = this.props;
-    let isConnected
     if(rack.length < 2) {
         return setAlert('Your rack should have at least two words', 'failure');
     }
@@ -185,6 +207,7 @@ async submitRack () {
     this.state.socket.on('randomAnagramResponse', (result) => { 
        this.setState({ rack: [result[0].word] });
     });
+    this.inputRef.current.focus();
     this.randomOnRack.play();
 }  
 resetTimer() {
@@ -210,7 +233,7 @@ resetTimer() {
     });
     this.randomOnRack.play();
   };
-  updateTime () {
+  updateTime() {
     const { isActive, timeLeft, isGameOver } = this.state;
     if (timeLeft > 0 && isActive) {
       this.setState(prevState => ({
@@ -225,7 +248,7 @@ resetTimer() {
         this.setState({ isGameOver: true });
         this.onPause();
      }
-    if(isGameOver) {
+    if (isGameOver) {
         this.theEnd.play();
     } 
   };
@@ -254,12 +277,47 @@ skip() {
        this.setState({ rack: [result[0].word] })
     });
     this.randomOnRack.play();
-}  
+    this.inputRef.current.focus();
+}
+handleKeyDown(e) {
+  const { isActive, timeLeft } = this.state;
+  switch(e.keyCode) {
+    case SHIFT:
+      isActive && timeLeft > 0 ? this.submitRack() : '';
+      break;
+    case ESC:
+      isActive && timeLeft > 0 ? this.pauseTimer() : this.startTimer();
+      timeLeft > 0 ? this.inputRef.current.focus() : '';
+      break; 
+    case RIGHT:
+      isActive && timeLeft > 0 ? this.skip() : ''; 
+      break;
+    default:
+      break;  
+    }
+  }; 
+
+  toggleModal() {
+    this.setState(prevState => ({
+      openModal: !prevState.openModal
+    }));
+  };
+
+  flightUp() {
+    window.scroll({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+      });
+  };
   
 render() {
-    const { rack, word, timeLeft, isActive, totalScore, scoreBoard, isGameOver, connectionStatus } = this.state;
+    const { rack, word, timeLeft, isActive, totalScore, scoreBoard, isGameOver, connectionStatus, openModal } = this.state;
     return (
     <div className="wrapper">
+      <Modal openModal={openModal} toggleModal={this.toggleModal}>
+        <NinjaTut/>
+      </Modal>
         { !isGameOver ? (
             <div className="dashwords">
             { connectionStatus ? <Badge/> : '' }
@@ -306,6 +364,7 @@ render() {
                   placeholder="Spell something magical"
                   autoComplete="off"
                   disabled={!isActive}
+                  ref={this.inputRef}
               />
                 ) }
               </>
@@ -332,6 +391,32 @@ render() {
                 />
               </div>)
              }
+             &nbsp;&nbsp;
+             <div>
+              <Tap className="help"
+                onClick={() => this.toggleModal()}
+                children={<MdHelp style={{ color: "peachpuff", fontSize: 35 }}/>}
+                />
+                &nbsp;&nbsp;
+              { 
+                scoreBoard.length > 0 ?
+                (
+                <>
+                  <a href="#scored-racks">
+                    <Tap className="scored-racks"
+                    onClick={() => this.pauseTimer()}
+                    children={<MdPlaylistAddCheck style={{ color: "peachpuff", fontSize: 35 }}/>}
+                    />
+                  </a>
+                &nbsp;&nbsp;
+                    <Tap className="flight-up"
+                    onClick={() => this.flightUp()}
+                    children={<MdArrowUpward style={{ color: "peachpuff", fontSize: 35 }}/>}
+                    />
+                </>
+                ) : ''
+              }
+             </div>
             </div>
         ) : (<div className="final-dashwords">
             <h1 id="game-over">Game Over</h1>
@@ -339,14 +424,14 @@ render() {
          &nbsp;&nbsp;
                   <Tap className="replay"
                   onClick={() => this.resetTimer()}
-                  children={<MdReplay style={{ color: "#f8b26a", fontSize: 50 }} />}
+                  children={<MdReplay style={{ color: "#2196F3", fontSize: 50 }} />}
                 />
-          &nbsp;&nbsp;      
+          &nbsp;&nbsp;     
         </div>
         ) } 
           {
               scoreBoard.length > 0 ? (
-                <div className="history">
+                <div className="history" id="scored-racks">
                     Scored Racks
                     {scoreBoard}
                 </div>
