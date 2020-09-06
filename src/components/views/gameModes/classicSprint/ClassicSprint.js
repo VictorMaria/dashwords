@@ -1,5 +1,14 @@
 import React, { Component } from 'react';
-import { MdBackspace, MdReplay, MdPlayArrow, MdPause, MdDoneAll } from "react-icons/md";
+import { MdBackspace,
+  MdReplay,
+  MdPlayArrow,
+  MdPause,
+  MdDoneAll,
+  MdHelp,
+  MdPlaylistAddCheck,
+  MdArrowUpward,
+  } from "react-icons/md";
+
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux'
 import dictionary from '../../../../utils/dictionary.json';
@@ -19,8 +28,10 @@ import { checkOnlineStatus } from '../../../../utils/checkOnlineStatus';
 import { BeamingDot, RedBeamingDot } from '../../../../components/beamingDot/BeamingDot';
 import { Badge } from '../../../../components/responseHolder/Badge';
 import keyCodes from '../../../../utils/keyCodes';
+import { Modal } from '../../../modal/Modal';
+import { ClassicSprintTut } from '../../../../helpers/NinjaTut';
 
-const { ESC, SHIFT, RIGHT } = keyCodes;
+const { ESC, SHIFT } = keyCodes;
 
 class ClassicSprint extends Component {
     constructor(props) {
@@ -42,6 +53,7 @@ class ClassicSprint extends Component {
           timeLeft: (1 * 330),
           timerId: null,
           connectionStatus: true,
+          openModal: false,
         };
         this.inputRef = React.createRef();
         this.sound = new Audio(dashwordsTickTock);
@@ -56,6 +68,8 @@ class ClassicSprint extends Component {
         this.removeWordFromRack = this.removeWordFromRack.bind(this);
         this.handleConnectionChange = this.handleConnectionChange.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
+        this.toggleModal = this.toggleModal.bind(this);
+        this.flightUp = this.flightUp.bind(this);
       }
   handleConnectionChange () {
       const condition = navigator.onLine ? 'online' : 'offline';
@@ -264,7 +278,7 @@ handleKeyDown (e) {
   const { isActive, timeLeft } = this.state;
   switch(e.keyCode) {
     case SHIFT:
-      this.submitRack();
+      isActive && timeLeft > 0 ? this.submitRack() : '';
       break;
     case ESC:
       isActive && timeLeft > 0 ? this.pauseTimer() : this.startTimer();
@@ -274,11 +288,28 @@ handleKeyDown (e) {
       break;  
     }
   };
+
+  toggleModal () {
+    this.setState(prevState => ({
+      openModal: !prevState.openModal
+    }));
+  };
+
+  flightUp() {
+    window.scroll({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+      });
+  };
   
 render() {
-    const { rack, word, timeLeft, isActive, totalScore, scoreBoard, isGameOver, connectionStatus } = this.state;
+    const { rack, word, timeLeft, isActive, totalScore, scoreBoard, isGameOver, connectionStatus, openModal } = this.state;
     return (
     <div className="wrapper">
+      <Modal openModal={openModal} toggleModal={this.toggleModal}>
+        <ClassicSprintTut/>
+      </Modal>
         { !isGameOver ? (
             <div className="dashwords">
              { connectionStatus ? <Badge/> : '' }
@@ -330,6 +361,32 @@ render() {
                 />
               </div>)
              }
+             &nbsp;&nbsp;
+             <div>
+              <Tap className="help"
+                onClick={() => this.toggleModal()}
+                children={<MdHelp style={{ color: "peachpuff", fontSize: 35 }}/>}
+                />
+                &nbsp;&nbsp;
+              { 
+                scoreBoard.length > 0 ?
+                (
+                <>
+                  <a href="#scored-racks">
+                    <Tap className="scored-racks"
+                    onClick={() => this.pauseTimer()}
+                    children={<MdPlaylistAddCheck style={{ color: "peachpuff", fontSize: 35 }}/>}
+                    />
+                  </a>
+                &nbsp;&nbsp;
+                    <Tap className="flight-up"
+                    onClick={() => this.flightUp()}
+                    children={<MdArrowUpward style={{ color: "peachpuff", fontSize: 35 }}/>}
+                    />
+                </>
+                ) : ''
+              }
+             </div>
             </div>
         ) : (<div className="final-dashwords">
             <h1 id="game-over">Game Over</h1>
@@ -344,7 +401,7 @@ render() {
         ) } 
           {
               scoreBoard.length > 0 ? (
-                <div className="history">
+                <div className="history" id="scored-racks">
                     Scored Racks
                     {scoreBoard}
                 </div>
