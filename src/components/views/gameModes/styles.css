@@ -81,8 +81,25 @@
   }
 }
 
+@keyframes markedRackExtra {
+  0% {
+    text-decoration: line-through;
+    text-decoration-color: palegoldenrod;
+  }
+  100% {
+    background-color: rgba(255, 255, 255, 0.4);
+    text-decoration: line-through;
+    text-decoration-color: palegoldenrod;
+    filter: blur(3px);
+  }
+}
+
+
 .marked .word-tile, #ninja-word-tile {
   animation: markedRack 1s;
+}
+.marked #ninja-word-tile {
+  animation: markedRackExtra 1s;
 }
 
 .word-tile:hover {
