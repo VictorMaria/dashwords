@@ -163,12 +163,15 @@ class Ninja extends Component {
         }
 }
 removeWordFromRack (index) {
-    const rackElements = document.getElementsByClassName('word-tile');
+    const rackElements = document.getElementsByClassName('ninja-word-tile');
     rackElements[index].classList.add('remove-word-tile');
+    this.offTheRack.play();
     const { rack } = this.state;
     setTimeout(() => {
       this.setState({ rack: [...rack.filter(word => rack.indexOf(word) !== index)]});
-      this.offTheRack.play();
+      if (rackElements[index]) {
+          rackElements[index].classList.remove('remove-word-tile');
+        }
       this.inputRef.current.focus();
     }, 500);
   };

@@ -187,8 +187,7 @@ removeWordFromRack(index) {
         this.setState({ rack: [...rack.filter(word => rack.indexOf(word) !== index)]});
         if (rackElements[index]) {
           rackElements[index].classList.remove('remove-word-tile');
-        }
-        
+        } 
       this.inputRef.current.focus();
      }, 500);
   };
