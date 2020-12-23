@@ -224,7 +224,7 @@ submitRack () {
     rackCase[0].classList.add('marked');
     
     setTimeout(() => {
-      rackCase[0].classList.remove('marked')
+      rackCase[0].classList.remove('marked');
       this.setState(prevState => ({
             playedWords: [...playedWords, ...rack],
             rack: [],

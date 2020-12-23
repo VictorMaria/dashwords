@@ -81,11 +81,7 @@
   }
 }
 
-.marked .word-tile {
-  animation: markedRack 1s;
-}
-
-.marked .ninja-word-tile {
+.marked .word-tile, #ninja-word-tile {
   animation: markedRack 1s;
 }
 

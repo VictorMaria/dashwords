@@ -206,6 +206,7 @@ submitRack () {
     const rackCase = document.getElementsByClassName('rack');
     rackCase[0].classList.add('marked');
     setTimeout(() => {
+      rackCase[0].classList.remove('marked');
       this.setState(prevState => ({
             playedWords: [...playedWords, ...rack],
             rack: [],
