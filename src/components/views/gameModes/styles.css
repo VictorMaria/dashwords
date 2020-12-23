@@ -26,7 +26,7 @@
   }
 }
 
-.word-tile, .ninja-word-tile {
+.word-tile {
     background-color: black;
     color: #abbd81;
     width: fit-content;
@@ -38,16 +38,6 @@
     animation: addToRack 0.5s;
 }
 
-.word-tile-no-effects {
-  background-color: black;
-  color: #abbd81;
-  width: fit-content;
-  padding-left: 5px;
-  padding-bottom: 5px;
-  border-radius: 5px;
-  margin: 5px;
-  filter: blur(0px);
-}
 
 
 @keyframes removeFromRack {
@@ -95,6 +85,10 @@
   animation: markedRack 1s;
 }
 
+.marked .ninja-word-tile {
+  animation: markedRack 1s;
+}
+
 .word-tile:hover {
   background-color: black;
   color: #d4e3ab;
@@ -118,7 +112,7 @@
   box-shadow: 3px 3px 5px 6px #ccc;
 }
 
-.ninja-word-tile:first-child {
+#ninja-word-tile {
   color: palegoldenrod;
   animation-name: randomOnRack;
   animation-duration: 1s;
