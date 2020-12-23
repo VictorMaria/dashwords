@@ -163,10 +163,14 @@ class Ninja extends Component {
         }
 }
 removeWordFromRack (index) {
+    const rackElements = document.getElementsByClassName('word-tile');
+    rackElements[index].classList.add('remove-word-tile');
     const { rack } = this.state;
-    this.setState({ rack: [...rack.filter(word => rack.indexOf(word) !== index)]});
-    this.offTheRack.play();
-    this.inputRef.current.focus();
+    setTimeout(() => {
+      this.setState({ rack: [...rack.filter(word => rack.indexOf(word) !== index)]});
+      this.offTheRack.play();
+      this.inputRef.current.focus();
+    }, 500);
   };
 scoreRack () {
     const { rack, scoreBoard } = this.state;
@@ -196,19 +200,23 @@ submitRack () {
         return setAlert('Your rack should have at least two words', 'failure');
     }
     this.scoreRack();
-    this.setState(prevState => ({
+    const rackCase = document.getElementsByClassName('rack');
+    rackCase[0].classList.add('marked');
+    setTimeout(() => {
+      this.setState(prevState => ({
             playedWords: [...playedWords, ...rack],
             rack: [],
-    }));
-    this.setState(prevState => ({
+      }));
+      this.setState(prevState => ({
         score: prevState.score - prevState.score,
         }));
-    this.state.socket.emit('randomAnagramRequest');
-    this.state.socket.on('randomAnagramResponse', (result) => { 
-       this.setState({ rack: [result[0].word] });
-    });
-    this.inputRef.current.focus();
-    this.randomOnRack.play();
+      this.state.socket.emit('randomAnagramRequest');
+      this.state.socket.on('randomAnagramResponse', (result) => { 
+      this.setState({ rack: [result[0].word] });
+      });
+      this.inputRef.current.focus();
+      this.randomOnRack.play();
+      }, 500)
 }  
 resetTimer() {
     const { timerId } = this.state;

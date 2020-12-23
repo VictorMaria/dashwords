@@ -28,6 +28,7 @@ import { checkOnlineStatus } from '../../../../utils/checkOnlineStatus';
 import { BeamingDot, RedBeamingDot } from '../../../../components/beamingDot/BeamingDot';
 import { Badge } from '../../../../components/responseHolder/Badge';
 import keyCodes from '../../../../utils/keyCodes';
+import { getRandomString } from '../../../../utils/getRandomString';
 import { Modal } from '../../../modal/Modal';
 import { ClassicSprintTut } from '../../../../helpers/NinjaTut';
 
@@ -55,7 +56,8 @@ class ClassicSprint extends Component {
           connectionStatus: true,
           openModal: false,
         };
-        this.inputRef = React.createRef();
+        
+        this.inputRef = React.createRef();;
         this.sound = new Audio(dashwordsTickTock);
         this.sound.loop = true;
         this.onTheRack = new Audio(onTheRack);
@@ -177,10 +179,18 @@ class ClassicSprint extends Component {
         }
 }
 removeWordFromRack(index) {
-    const { rack } = this.state;
-    this.setState({ rack: [...rack.filter(word => rack.indexOf(word) !== index)]});
-    this.offTheRack.play();
-    this.inputRef.current.focus();
+  const rackElements = document.getElementsByClassName('word-tile');
+  rackElements[index].classList.add('remove-word-tile');
+  this.offTheRack.play();
+      const { rack } = this.state;
+      setTimeout(() => {
+        this.setState({ rack: [...rack.filter(word => rack.indexOf(word) !== index)]});
+        if (rackElements[index]) {
+          rackElements[index].classList.remove('remove-word-tile');
+        }
+        
+      this.inputRef.current.focus();
+     }, 500);
   };
 scoreRack () {
     const { rack, scoreBoard } = this.state;
@@ -210,15 +220,22 @@ submitRack () {
         return setAlert('Your rack should have at least two words', 'failure');
     }
     this.scoreRack();
-    this.state.socket.emit('rack', rack)
-    this.setState(prevState => ({
+    this.state.socket.emit('rack', rack);
+    const rackCase = document.getElementsByClassName('rack');
+    rackCase[0].classList.add('marked');
+    
+    setTimeout(() => {
+      rackCase[0].classList.remove('marked')
+      this.setState(prevState => ({
             playedWords: [...playedWords, ...rack],
             rack: [],
     }));
     this.setState(prevState => ({
         score: prevState.score - prevState.score,
         }));
-    this.inputRef.current.focus();       
+    this.inputRef.current.focus();
+    }, 500)
+    
 }
 resetTimer() {
     const { timerId } = this.state;
@@ -322,15 +339,15 @@ render() {
                     <label id="small-label"><em>Type a word and press Enter</em></label>
                     </label>}
                 <div className="rack">
-                    {rack.map((word, index) => (
-                        <div className="word-tile" key={index}>
-                            <span id="word">{word.toUpperCase()}</span>
-                            &nbsp;&nbsp;
+                    {rack.map((word, index) => {
+                      return (
+                        <div className="word-tile" key={index} >
+                            <span id="word" style={{ marginRight: '5px' }}>{word.toUpperCase()}</span>
                             { isActive ? (<span className="delete" onClick={() => this.removeWordFromRack(index)}>
                                 <MdBackspace style={{ color: "#e15b64", fontSize: 18 }} />
                             </span>) : ''}
                         </div>
-                    ))}
+                    )})}
             </div>
             &nbsp;&nbsp;
                 <input

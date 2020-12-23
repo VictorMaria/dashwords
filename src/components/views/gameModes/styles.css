@@ -10,9 +10,19 @@
 @keyframes addToRack {
   0% {
     color: peachpuff;
+    filter: blur(4px);
+  }
+  25% {
+    color: peachpuff;
+    filter: blur(3px);
+  }
+  50% {
+    color: #f8b26a;
+    filter: blur(2px);
   }
   100% {
     color: #f8b26a;
+    filter: blur(0px);
   }
 }
 
@@ -24,8 +34,65 @@
     padding-bottom: 5px;
     border-radius: 5px;
     margin: 5px;
-    animation-name: addToRack;
-    animation-duration: 1s;
+    filter: blur(0px);
+    animation: addToRack 0.5s;
+}
+
+.word-tile-no-effects {
+  background-color: black;
+  color: #abbd81;
+  width: fit-content;
+  padding-left: 5px;
+  padding-bottom: 5px;
+  border-radius: 5px;
+  margin: 5px;
+  filter: blur(0px);
+}
+
+
+@keyframes removeFromRack {
+  0% {
+    color: #e15b64;
+    text-decoration: line-through;
+    text-decoration-color: #e15b64;
+  }
+  100% {
+    color: #e15b64;
+    text-decoration: line-through;
+    text-decoration-color: #e15b64;
+    filter: blur(3px);
+  }
+}
+
+.remove-word-tile {
+    background-color: black;
+    color: #abbd81;
+    width: fit-content;
+    padding-left: 5px;
+    padding-bottom: 5px;
+    border-radius: 5px;
+    margin: 5px;
+    filter: blur(0px);
+    animation: removeFromRack 0.5s;
+}
+
+@keyframes markedRack {
+  0% {
+    color: #abbd81;
+    text-decoration: line-through;
+    text-decoration-color: #abbd81;
+  }
+  100% {
+    background-color: rgba(255, 255, 255, 0.4);
+    color: #abbd81;
+    text-decoration: line-through;
+    text-decoration-color: #abbd81;
+    filter: blur(3px);
+  }
+}
+
+.marked .word-tile {
+  animation: markedRack 1s;
 }
 
 .word-tile:hover {
