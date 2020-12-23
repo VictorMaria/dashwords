@@ -163,7 +163,7 @@ class Ninja extends Component {
         }
 }
 removeWordFromRack (index) {
-    const rackElements = document.getElementsByClassName('ninja-word-tile');
+    const rackElements = document.getElementsByClassName('word-tile');
     rackElements[index].classList.add('remove-word-tile');
     this.offTheRack.play();
     const { rack } = this.state;
@@ -343,9 +343,8 @@ render() {
                     {rack.map((word, index) => (
                       // Marks the random word differently
                         index === 0 ? (
-                            <div className="ninja-word-tile" key={index}>
-                            <span id="word">{word.toUpperCase()}</span>
-                            &nbsp;&nbsp;
+                            <div className="word-tile" id="ninja-word-tile" key={index}>
+                            <span id="word" style={{ marginRight: '5px' }}>{word.toUpperCase()}</span>
                             { isActive ? (<span className="delete">
                                 <MdBackspace style={{ color: "#FAA", fontSize: 18 }} />
                             </span>) : ''}
@@ -353,8 +352,7 @@ render() {
                             ) : (
                         // Marks the non ramdom words differently      
                             <div className="word-tile" key={index}>
-                            <span id="word">{word.toUpperCase()}</span>
-                            &nbsp;&nbsp;
+                            <span id="word" style={{ marginRight: '5px' }}>{word.toUpperCase()}</span>
                             { isActive ? (<span className="delete" onClick={() => this.removeWordFromRack(index)}>
                                 <MdBackspace style={{ color: "#e15b64", fontSize: 18 }} />
                             </span>) : ''}
