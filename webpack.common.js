@@ -20,6 +20,10 @@ module.exports = {
         use: ['style-loader', 'css-loader']
       },
       {
+        test: /\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/,
+        use: ['file-loader']
+      },
+      {
         test: /\.mp3$/,
         loader: 'file-loader',
         query: {
